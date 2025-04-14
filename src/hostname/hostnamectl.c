@@ -59,6 +59,7 @@ typedef struct StatusInfo {
         const char *home_url;
         const char *hardware_vendor;
         const char *hardware_model;
+        const char *ansi_color;
         const char *firmware_version;
         usec_t firmware_date;
         sd_id128_t machine_id;
@@ -312,6 +313,14 @@ static int print_status_info(StatusInfo *i) {
                         return table_log_add_error(r);
         }
 
+        if (!isempty(i->ansi_color)) {
+                r = table_add_many(table,
+                                   TABLE_FIELD, "Ansi Color",
+                                   TABLE_STRING, i->ansi_color);
+                if (r < 0)
+                        return table_log_add_error(r);
+        }
+
         if (!isempty(i->hardware_serial)) {
                 r = table_add_many(table,
                                    TABLE_FIELD, "Hardware Serial",
@@ -413,6 +422,7 @@ static int show_all_names(sd_bus *bus) {
                 { "HomeURL",                     "s",  NULL,          offsetof(StatusInfo, home_url)         },
                 { "HardwareVendor",              "s",  NULL,          offsetof(StatusInfo, hardware_vendor)  },
                 { "HardwareModel",               "s",  NULL,          offsetof(StatusInfo, hardware_model)   },
+                { "AnsiColor",                   "s",  NULL,          offsetof(StatusInfo, ansi_color)       },
                 { "FirmwareVersion",             "s",  NULL,          offsetof(StatusInfo, firmware_version) },
                 { "FirmwareDate",                "t",  NULL,          offsetof(StatusInfo, firmware_date)    },
                 { "MachineID",                   "ay", bus_map_id128, offsetof(StatusInfo, machine_id)       },
@@ -681,6 +691,11 @@ static int get_or_set_location(int argc, char **argv, void *userdata) {
                            set_simple_string(userdata, "location", "SetLocation", argv[1]);
 }
 
+static int get_or_set_ansi_color(int argc, char **argv, void *userdata) {
+        return argc == 1 ? get_one_name(userdata, "AnsiColor", NULL) :
+                           set_simple_string(userdata, "color", "SetAnsiColor", argv[1]);
+}
+
 static int help(void) {
         _cleanup_free_ char *link = NULL;
         int r;
@@ -698,6 +713,7 @@ static int help(void) {
                "  chassis [NAME]         Get/set chassis type for host\n"
                "  deployment [NAME]      Get/set deployment environment for host\n"
                "  location [NAME]        Get/set location for host\n"
+               "  ansi-color [NAME]        Get/set ansi color for host\n"
                "\n%4$sOptions:%5$s\n"
                "  -h --help              Show this help\n"
                "     --version           Show package version\n"
@@ -825,6 +841,8 @@ static int hostnamectl_main(sd_bus *bus, int argc, char *argv[]) {
                 { "set-deployment", 2,        2,        0,            get_or_set_deployment }, /* obsolete */
                 { "location",       VERB_ANY, 2,        0,            get_or_set_location   },
                 { "set-location",   2,        2,        0,            get_or_set_location   }, /* obsolete */
+                { "ansi-color",     VERB_ANY, 2,        0,            get_or_set_ansi_color },
+                { "set-ansi-color", 2,        2,        0,            get_or_set_ansi_color }, /* obsolete */
                 { "help",           VERB_ANY, VERB_ANY, 0,            verb_help             }, /* Not documented, but supported since it is created. */
                 {}
         };
