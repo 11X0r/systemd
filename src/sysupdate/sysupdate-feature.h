@@ -3,13 +3,13 @@
 #include "sysupdate-forward.h"
 
 typedef struct Feature {
-        unsigned n_ref;
-
         char *id;
 
         char *description;
         char *documentation;
         char *appstream;
+
+        unsigned n_ref;
 
         bool enabled;
 } Feature;
