@@ -1,0 +1,17 @@
+{
+  "scanner_config": {
+    "patterns": "*.c,*.h",
+    "check_sensitive": true,
+    "calculate_hashes": false,
+    "max_file_size": 10485760
+  },
+  "analyzer_config": {
+    "file_extensions": [".c", ".h"],
+    "check_secrets": true,
+    "check_sql": false,
+    "check_dangerous_functions": true
+  },
+  "reporter_config": {
+    "include_code_flows": true
+  }
+}

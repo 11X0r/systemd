@@ -1,0 +1,7 @@
+project_name: systemd
+api_url: http://localhost:8000
+
+workers:
+  auto_start_workers: true
+  auto_stop_workers: false
+  worker_startup_timeout: 120
